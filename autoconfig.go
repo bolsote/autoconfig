@@ -62,11 +62,11 @@ func lookup(service, proto, domain string) (string, uint16, error) {
 
 // Generate an autoconfig XML document based on the information obtained from
 // querying the domain SRV records.
-func generate_xml(domain string) (string, error) {
+func generate_xml(domain string) ([]byte, error) {
 	// Incoming server.
 	address_in, port_in, err := lookup("imaps", "tcp", domain)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	incoming := IncomingServer{}
@@ -80,7 +80,7 @@ func generate_xml(domain string) (string, error) {
 	// Outgoing server.
 	address_out, port_out, err := lookup("submission", "tcp", domain)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	outgoing := OutgoingServer{}
@@ -108,10 +108,10 @@ func generate_xml(domain string) (string, error) {
 
 	xmlconfig, err := xml.MarshalIndent(&config, "", "\t")
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return string(xmlconfig), nil
+	return xmlconfig, nil
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -121,7 +121,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprint(w, xml.Header, xmlconfig)
+	fmt.Fprint(w, xml.Header, string(xmlconfig))
 }
 
 func main() {
