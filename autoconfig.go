@@ -106,7 +106,7 @@ func generate_xml(domain string) ([]byte, error) {
 		},
 	}
 
-	xmlconfig, err := xml.MarshalIndent(&config, "", "\t")
+	xmlconfig, err := xml.Marshal(&config)
 	if err != nil {
 		return nil, err
 	}
