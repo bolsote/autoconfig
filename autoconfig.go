@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strings"
 )
 
 type Server struct {
@@ -57,7 +58,7 @@ func lookup(service, proto, domain string) (string, uint16, error) {
 		return "", 0, errors.New("No SRV records available for the given domain")
 	}
 
-	return addresses[0].Target, addresses[0].Port, nil
+	return strings.Trim(addresses[0].Target, "."), addresses[0].Port, nil
 }
 
 // Generate an autoconfig XML document based on the information obtained from
