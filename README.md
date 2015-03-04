@@ -8,4 +8,11 @@ This small Go application translates DNS SRV records into an [Autoconfiguration 
  
 The code is easy to change if you want something else, though. I just won't support it.
 
-In case your SRV records have multiple entries, the code will just keep the one with the highest priority. A nice thing to have would be multiple server entries. The [Autoconfiguration file definition](https://wiki.mozilla.org/Thunderbird:Autoconfiguration:ConfigFileFormat) states that, in there are multiple ``incomingServer`` or ``outgoingServer`` entries, they must appear in order of priority. A simple way to implement this would be to sort the records by priority, and, keeping that order, generate multiple ``*Server`` entries. Since I don't use such a feature, it's not implemented.
+In case your SRV records have multiple entries, the code will just keep the one with the highest priority. A nice thing to have would be multiple server entries. The [Autoconfiguration file definition](https://wiki.mozilla.org/Thunderbird:Autoconfiguration:ConfigFileFormat) states that, in there are multiple ``incomingServer`` or ``outgoingServer`` entries, they must appear in order of priority. Since ``net.LookupSRV()`` returns all found SRV records [sorted by priority](http://golang.org/pkg/net/#LookupSRV), just returning all of them in ``lookup()`` and iterating over them (preserving their order) to generate multiple ``*Server`` entries would suffice. Since I don't use such a feature, it's not implemented.
+
+For the sake of completeness, let's include a list of possible features. I will get to implement them if I ever use them, or if I feel like playing with this:
+
+ * Multiple servers.
+ * Automatically guess ``SocketType`` from the port number. It would not work for unconventional setups, but if you have one, I'm sure you can modify the code yourself.
+ * Try to open a session to determine the ``Authentication`` type. It would also help in trying to guess what goes in ``Username``, although it would produce failed login attemps (careful with software like fail2ban).
+ * Maybe, in order to make all this more useful, make some of the ``*Server`` fields configurable (such as ``Username`` or ``Authentication``), e.g., through a configuration file.
