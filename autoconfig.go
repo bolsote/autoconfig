@@ -74,9 +74,9 @@ func generate_xml(domain string) ([]byte, error) {
 	incoming.Type = "imap"
 	incoming.Hostname = address_in
 	incoming.Port = port_in
-	incoming.SocketType = "STARTTLS"
-	incoming.Authentication = "password-encrypted"
-	incoming.Username = "%EMAILADDRESS%"
+	incoming.SocketType = "SSL"
+	incoming.Authentication = "password-cleartext"
+	incoming.Username = "%EMAILLOCALPART%"
 
 	// Outgoing server.
 	address_out, port_out, err := lookup("submission", "tcp", domain)
@@ -88,9 +88,9 @@ func generate_xml(domain string) ([]byte, error) {
 	outgoing.Type = "smtp"
 	outgoing.Hostname = address_out
 	outgoing.Port = port_out
-	outgoing.SocketType = "STARTTLS"
-	outgoing.Authentication = "password-encrypted"
-	outgoing.Username = "%EMAILADDRESS%"
+	outgoing.SocketType = "SSL"
+	outgoing.Authentication = "password-cleartext"
+	outgoing.Username = "%EMAILLOCALPART%"
 
 	// Final data mangling.
 	config := ClientConfig{
@@ -127,5 +127,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":9000", nil)
+	http.ListenAndServe(":9090", nil)
 }
