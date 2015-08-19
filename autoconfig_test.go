@@ -1,6 +1,12 @@
 package main
 
-import "testing"
+import (
+	"encoding/xml"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
 
 func TestLookupValid(t *testing.T) {
 	domain := Domain{"marshland.ovh", ClientConfig{}}
@@ -75,5 +81,49 @@ func TestConfigOutgoing(t *testing.T) {
 
 	if got != want {
 		t.Errorf("Incoming server doesn't match expected value")
+	}
+}
+
+func TestHTTServer(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(handler))
+	defer s.Close()
+
+	r, err := http.Get(s.URL)
+	if err != nil {
+		t.Error("HTTP server failed")
+	}
+
+	config, err := ioutil.ReadAll(r.Body)
+	r.Body.Close()
+	if err != nil {
+		t.Error("HTTP response reading failed")
+	}
+
+	c := ClientConfig{}
+	if xml.Unmarshal([]byte(config), &c) != nil {
+		t.Error("HTTP response unmarshalling failed")
+	}
+
+	wantIn := IncomingServer{}
+	wantIn.Type = "imap"
+	wantIn.Hostname = "hermes.marshland.ovh"
+	wantIn.Port = 993
+	wantIn.SocketType = "SSL"
+	wantIn.Authentication = "password-cleartext"
+	wantIn.Username = "%EMAILLOCALPART%"
+
+	wantOut := OutgoingServer{}
+	wantOut.Type = "smtp"
+	wantOut.Hostname = "hermes.marshland.ovh"
+	wantOut.Port = 465
+	wantOut.SocketType = "SSL"
+	wantOut.Authentication = "password-cleartext"
+	wantOut.Username = "%EMAILLOCALPART%"
+
+	if c.Providers[0].IncomingServers[0] != wantIn {
+		t.Error("Incoming server doesn't match expected value")
+	}
+	if c.Providers[0].OutgoingServers[0] != wantOut {
+		t.Error("Outgoing server doesn't match expected value")
 	}
 }
