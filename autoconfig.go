@@ -47,9 +47,14 @@ type ClientConfig struct {
 	Providers []Provider
 }
 
+type Domain struct {
+	domain string
+	config ClientConfig
+}
+
 // Lookup the given service, protocol pair in the domain SRV records.
-func lookup(service, proto, domain string) (string, uint16, error) {
-	_, addresses, err := net.LookupSRV(service, proto, domain)
+func (d *Domain) lookup(service, proto string) (string, uint16, error) {
+	_, addresses, err := net.LookupSRV(service, proto, d.domain)
 
 	if err != nil {
 		return "", 0, err
@@ -63,9 +68,9 @@ func lookup(service, proto, domain string) (string, uint16, error) {
 
 // Generate an autoconfig XML document based on the information obtained from
 // querying the domain SRV records.
-func generate_xml(domain string) ([]byte, error) {
+func (d *Domain) generate_xml() ([]byte, error) {
 	// Incoming server.
-	address_in, port_in, err := lookup("imaps", "tcp", domain)
+	address_in, port_in, err := d.lookup("imaps", "tcp")
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +84,7 @@ func generate_xml(domain string) ([]byte, error) {
 	incoming.Username = "%EMAILLOCALPART%"
 
 	// Outgoing server.
-	address_out, port_out, err := lookup("submission", "tcp", domain)
+	address_out, port_out, err := d.lookup("submission", "tcp")
 	if err != nil {
 		return nil, err
 	}
@@ -93,21 +98,21 @@ func generate_xml(domain string) ([]byte, error) {
 	outgoing.Username = "%EMAILLOCALPART%"
 
 	// Final data mangling.
-	config := ClientConfig{
+	d.config = ClientConfig{
 		Version: "1.1",
 		Providers: []Provider{
 			Provider{
-				Id:               domain,
-				Domain:           domain,
-				DisplayName:      domain,
-				DisplayShortName: domain,
+				Id:               d.domain,
+				Domain:           d.domain,
+				DisplayName:      d.domain,
+				DisplayShortName: d.domain,
 				IncomingServers:  []IncomingServer{incoming},
 				OutgoingServers:  []OutgoingServer{outgoing},
 			},
 		},
 	}
 
-	xmlconfig, err := xml.Marshal(&config)
+	xmlconfig, err := xml.Marshal(&d.config)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +121,8 @@ func generate_xml(domain string) ([]byte, error) {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	xmlconfig, err := generate_xml("marshland.ovh")
+	domain := &Domain{"marshland.ovh", ClientConfig{}}
+	xmlconfig, err := domain.generate_xml()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
