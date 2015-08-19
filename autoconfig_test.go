@@ -38,13 +38,22 @@ func TestLookupEmpty(t *testing.T) {
 }
 
 func TestLookupError(t *testing.T) {
-	domain := Domain{"marshland.ovh", ClientConfig{}}
-	proto, service := "udp", "imaps"
+	domain := Domain{"marshland.co.uk", ClientConfig{}}
+	proto, service := "tcp", "imaps"
 
 	_, _, err := domain.lookup(service, proto)
 
 	if err == nil {
 		t.Errorf("Service %q://%q should have errored", proto, service)
+	}
+}
+
+func TestConfigError(t *testing.T) {
+	domain := Domain{"marshland.co.uk", ClientConfig{}}
+	_, err := domain.generate_xml()
+
+	if err == nil {
+		t.Errorf("Incoming server parsing should have errored")
 	}
 }
 
