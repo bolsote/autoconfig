@@ -41,3 +41,39 @@ func TestLookupError(t *testing.T) {
 		t.Errorf("Service %q://%q should have errored", proto, service)
 	}
 }
+
+func TestConfigIncoming(t *testing.T) {
+	domain := Domain{"marshland.ovh", ClientConfig{}}
+	domain.generate_xml()
+
+	got := domain.config.Providers[0].IncomingServers[0]
+	want := IncomingServer{}
+	want.Type = "imap"
+	want.Hostname = "hermes.marshland.ovh"
+	want.Port = 993
+	want.SocketType = "SSL"
+	want.Authentication = "password-cleartext"
+	want.Username = "%EMAILLOCALPART%"
+
+	if got != want {
+		t.Errorf("Incoming server doesn't match expected value")
+	}
+}
+
+func TestConfigOutgoing(t *testing.T) {
+	domain := Domain{"marshland.ovh", ClientConfig{}}
+	domain.generate_xml()
+
+	got := domain.config.Providers[0].OutgoingServers[0]
+	want := OutgoingServer{}
+	want.Type = "smtp"
+	want.Hostname = "hermes.marshland.ovh"
+	want.Port = 465
+	want.SocketType = "SSL"
+	want.Authentication = "password-cleartext"
+	want.Username = "%EMAILLOCALPART%"
+
+	if got != want {
+		t.Errorf("Incoming server doesn't match expected value")
+	}
+}
