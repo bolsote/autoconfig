@@ -8,3 +8,8 @@ install:
 script:
     - go test -v -covermode=count -coverprofile=coverage.out
     - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+notifications:
+    email:
+        on_success: change
+        on_failure: always
+    slack: marshland:whhps9g7T0jujrU9PCK3ojGP
