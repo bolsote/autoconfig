@@ -18,33 +18,27 @@ type Server struct {
 	Username       string `xml:"username"`
 }
 type IncomingServer struct {
-	XMLName struct{} `xml:"incomingServer"`
-
 	Server
 }
 type OutgoingServer struct {
-	XMLName struct{} `xml:"outgoingServer"`
-
 	Server
 }
 
 type Provider struct {
-	XMLName struct{} `xml:"emailProvider"`
-
 	Id               string `xml:"id,attr"`
 	Domain           string `xml:"domain"`
 	DisplayName      string `xml:"displayName"`
 	DisplayShortName string `xml:"displayShortName"`
 
-	IncomingServers []IncomingServer
-	OutgoingServers []OutgoingServer
+	IncomingServers []IncomingServer `xml:"incomingServer"`
+	OutgoingServers []OutgoingServer `xml:"outgoingServer"`
 }
 
 type ClientConfig struct {
-	XMLName struct{} `xml:"clientConfig"`
+	XMLName xml.Name `xml:"clientConfig"`
 
-	Version   string `xml:"version,attr"`
-	Providers []Provider
+	Version   string     `xml:"version,attr"`
+	Providers []Provider `xml:"emailProvider"`
 }
 
 type Domain struct {
