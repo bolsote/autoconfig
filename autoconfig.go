@@ -46,6 +46,12 @@ type Domain struct {
 	config ClientConfig
 }
 
+type DomainConfig interface {
+	lookup(service, proto string) (string, uint16, error)
+	GenerateXml() ([]byte, error)
+	HTTPHandler(w http.ResponseWriter, r *http.Request)
+}
+
 // Lookup the given service, protocol pair in the domain SRV records.
 func (d *Domain) lookup(service, proto string) (string, uint16, error) {
 	_, addresses, err := net.LookupSRV(service, proto, d.domain)
@@ -62,7 +68,7 @@ func (d *Domain) lookup(service, proto string) (string, uint16, error) {
 
 // Generate an autoconfig XML document based on the information obtained from
 // querying the domain SRV records.
-func (d *Domain) generate_xml() ([]byte, error) {
+func (d *Domain) GenerateXml() ([]byte, error) {
 	// Incoming server.
 	address_in, port_in, err := d.lookup("imaps", "tcp")
 	if err != nil {
@@ -114,9 +120,8 @@ func (d *Domain) generate_xml() ([]byte, error) {
 	return xmlconfig, nil
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	domain := &Domain{"marshland.ovh", ClientConfig{}}
-	xmlconfig, err := domain.generate_xml()
+func (d *Domain) HttpHandler(w http.ResponseWriter, r *http.Request) {
+	xmlconfig, err := d.GenerateXml()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -126,6 +131,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", handler)
+	domain := &Domain{"marshland.ovh", ClientConfig{}}
+	http.HandleFunc("/", domain.HttpHandler)
 	http.ListenAndServe(":9090", nil)
 }

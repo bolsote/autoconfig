@@ -50,7 +50,7 @@ func TestLookupError(t *testing.T) {
 
 func TestConfigError(t *testing.T) {
 	domain := Domain{"marshland.co.uk", ClientConfig{}}
-	_, err := domain.generate_xml()
+	_, err := domain.GenerateXml()
 
 	if err == nil {
 		t.Errorf("Incoming server parsing should have errored")
@@ -59,7 +59,7 @@ func TestConfigError(t *testing.T) {
 
 func TestConfigIncoming(t *testing.T) {
 	domain := Domain{"marshland.ovh", ClientConfig{}}
-	domain.generate_xml()
+	domain.GenerateXml()
 
 	got := domain.config.Providers[0].IncomingServers[0]
 	want := IncomingServer{}
@@ -77,7 +77,7 @@ func TestConfigIncoming(t *testing.T) {
 
 func TestConfigOutgoing(t *testing.T) {
 	domain := Domain{"marshland.ovh", ClientConfig{}}
-	domain.generate_xml()
+	domain.GenerateXml()
 
 	got := domain.config.Providers[0].OutgoingServers[0]
 	want := OutgoingServer{}
@@ -94,7 +94,8 @@ func TestConfigOutgoing(t *testing.T) {
 }
 
 func TestHTTServer(t *testing.T) {
-	s := httptest.NewServer(http.HandlerFunc(handler))
+	d := &Domain{"marshland.ovh", ClientConfig{}}
+	s := httptest.NewServer(http.HandlerFunc(d.HttpHandler))
 	defer s.Close()
 
 	r, err := http.Get(s.URL)
