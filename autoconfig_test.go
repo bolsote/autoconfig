@@ -2,9 +2,8 @@ package main
 
 import "testing"
 
-func TestLookup(t *testing.T) {
+func TestLookupValid(t *testing.T) {
 	domain := Domain{"marshland.ovh", ClientConfig{}}
-
 	proto, service := "tcp", "imaps"
 
 	got_addr, got_port, err := domain.lookup(service, proto)
@@ -18,5 +17,27 @@ func TestLookup(t *testing.T) {
 	}
 	if got_port != want_port {
 		t.Errorf("Service %q://%q returned port %d, expected %d", proto, service, got_port, want_port)
+	}
+}
+
+func TestLookupEmpty(t *testing.T) {
+	domain := Domain{"marshland.ovh", ClientConfig{}}
+	proto, service := "udp", "imaps"
+
+	_, _, err := domain.lookup(service, proto)
+
+	if err == nil {
+		t.Errorf("Service %q://%q should have errored", proto, service)
+	}
+}
+
+func TestLookupError(t *testing.T) {
+	domain := Domain{"marshland.ovh", ClientConfig{}}
+	proto, service := "udp", "imaps"
+
+	_, _, err := domain.lookup(service, proto)
+
+	if err == nil {
+		t.Errorf("Service %q://%q should have errored", proto, service)
 	}
 }
