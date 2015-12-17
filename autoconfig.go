@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -58,9 +57,6 @@ func (d *Domain) lookup(service, proto string) (string, uint16, error) {
 
 	if err != nil {
 		return "", 0, err
-	}
-	if len(addresses) == 0 {
-		return "", 0, errors.New("No SRV records available for the given domain")
 	}
 
 	return strings.Trim(addresses[0].Target, "."), addresses[0].Port, nil

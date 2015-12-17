@@ -26,20 +26,9 @@ func TestLookupValid(t *testing.T) {
 	}
 }
 
-func TestLookupEmpty(t *testing.T) {
+func TestLookupError(t *testing.T) {
 	domain := Domain{"marshland.ovh", ClientConfig{}}
 	proto, service := "udp", "imaps"
-
-	_, _, err := domain.lookup(service, proto)
-
-	if err == nil {
-		t.Errorf("Service %q://%q should have errored", proto, service)
-	}
-}
-
-func TestLookupError(t *testing.T) {
-	domain := Domain{"marshland.co.uk", ClientConfig{}}
-	proto, service := "tcp", "imaps"
 
 	_, _, err := domain.lookup(service, proto)
 
@@ -53,7 +42,7 @@ func TestConfigError(t *testing.T) {
 	_, err := domain.GenerateXml()
 
 	if err == nil {
-		t.Errorf("Incoming server parsing should have errored")
+		t.Error("Incoming server parsing should have errored")
 	}
 }
 
@@ -71,7 +60,7 @@ func TestConfigIncoming(t *testing.T) {
 	want.Username = "%EMAILLOCALPART%"
 
 	if got != want {
-		t.Errorf("Incoming server doesn't match expected value")
+		t.Error("Incoming server doesn't match expected value")
 	}
 }
 
@@ -89,12 +78,13 @@ func TestConfigOutgoing(t *testing.T) {
 	want.Username = "%EMAILLOCALPART%"
 
 	if got != want {
-		t.Errorf("Incoming server doesn't match expected value")
+		t.Error("Incoming server doesn't match expected value")
 	}
 }
 
 func TestHTTServer(t *testing.T) {
 	d := &Domain{"marshland.ovh", ClientConfig{}}
+
 	s := httptest.NewServer(http.HandlerFunc(d.HttpHandler))
 	defer s.Close()
 
@@ -135,5 +125,17 @@ func TestHTTServer(t *testing.T) {
 	}
 	if c.Providers[0].OutgoingServers[0] != wantOut {
 		t.Error("Outgoing server doesn't match expected value")
+	}
+}
+
+func TestHTTPServerError(t *testing.T) {
+	d := &Domain{"marshland.co.uk", ClientConfig{}}
+
+	s := httptest.NewServer(http.HandlerFunc(d.HttpHandler))
+	defer s.Close()
+
+	r, _ := http.Get(s.URL)
+	if r.StatusCode != 500 {
+		t.Error("HTTP server should have errored")
 	}
 }
