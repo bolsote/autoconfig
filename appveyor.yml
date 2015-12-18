@@ -3,7 +3,9 @@ clone_folder: C:\gopath\src\github.com\bolsote\autoconfig.go
 init:
 - ps: >-
     Get-ChildItem Env:
+
     go version
+
     go env
 environment:
   GOPATH: C:\gopath
