@@ -7,6 +7,8 @@ init:
     go env
 environment:
   GOPATH: C:\gopath
+install:
+- ps: go get golang.org/x/tools/cmd/cover
 build_script:
 - ps: go build
 test_script:
