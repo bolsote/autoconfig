@@ -7,7 +7,7 @@ go:
 install:
     - go get golang.org/x/tools/cmd/cover
 script:
-    - go test -covermode=atomic -coverprofile=coverage.txt
+    - go test -v -covermode=atomic -coverprofile=coverage.txt
 after_success:
     - bash <(curl -s https://codecov.io/bash)
 notifications:
