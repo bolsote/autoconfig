@@ -1,6 +1,11 @@
 autoconfig.go
 =============
 
+[![Build Status (Unix/Mac)](https://travis-ci.org/bolsote/autoconfig.go.svg?branch=master)](https://travis-ci.org/bolsote/autoconfig.go)
+[![Build Status (Win)](https://ci.appveyor.com/api/projects/status/1mo5wb97ac7da7bw?svg=true)](https://ci.appveyor.com/project/bolsote/autoconfig-go)
+[![Test Coverate](https://codecov.io/github/bolsote/autoconfig.go/coverage.svg?branch=master)](https://codecov.io/github/bolsote/autoconfig.go?branch=master)
+[![Code Quality](https://codeclimate.com/github/bolsote/autoconfig.go/badges/gpa.svg)](https://codeclimate.com/github/bolsote/autoconfig.go)
+
 This small Go application translates DNS SRV records into an [Autoconfiguration file](https://developer.mozilla.org/en-US/docs/Mozilla/Thunderbird/Autoconfiguration/FileFormat/HowTo), compatible with a number of email clients. It works for my setup, which means a couple of assumptions:
 
  * Everything goes through SSL.
