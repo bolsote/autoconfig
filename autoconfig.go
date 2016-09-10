@@ -70,28 +70,32 @@ func (d *Domain) GenerateXml() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	incoming := IncomingServer{}
-	incoming.Type = "imap"
-	incoming.Hostname = address_in
-	incoming.Port = port_in
-	incoming.SocketType = "SSL"
-	incoming.Authentication = "password-cleartext"
-	incoming.Username = "%EMAILLOCALPART%"
+	incoming := IncomingServer{
+		Server{
+			Type: "imap",
+			Hostname: address_in,
+			Port: port_in,
+			SocketType: "SSL",
+			Authentication: "password-cleartext",
+			Username: "%EMAILLOCALPART%",
+		},
+	}
 
 	// Outgoing server.
 	address_out, port_out, err := d.lookup("submission", "tcp")
 	if err != nil {
 		return nil, err
 	}
-
-	outgoing := OutgoingServer{}
-	outgoing.Type = "smtp"
-	outgoing.Hostname = address_out
-	outgoing.Port = port_out
-	outgoing.SocketType = "SSL"
-	outgoing.Authentication = "password-cleartext"
-	outgoing.Username = "%EMAILLOCALPART%"
+	outgoing := OutgoingServer{
+		Server{
+			Type: "smtp",
+			Hostname: address_out,
+			Port: port_out,
+			SocketType: "SSL",
+			Authentication: "password-cleartext",
+			Username: "%EMAILLOCALPART%",
+		},
+	}
 
 	// Final data mangling.
 	d.config = ClientConfig{
