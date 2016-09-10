@@ -72,12 +72,12 @@ func (d *Domain) GenerateXml() ([]byte, error) {
 	}
 	incoming := IncomingServer{
 		Server{
-			Type: "imap",
-			Hostname: address_in,
-			Port: port_in,
-			SocketType: "SSL",
+			Type:           "imap",
+			Hostname:       address_in,
+			Port:           port_in,
+			SocketType:     "SSL",
 			Authentication: "password-cleartext",
-			Username: "%EMAILLOCALPART%",
+			Username:       "%EMAILLOCALPART%",
 		},
 	}
 
@@ -88,12 +88,12 @@ func (d *Domain) GenerateXml() ([]byte, error) {
 	}
 	outgoing := OutgoingServer{
 		Server{
-			Type: "smtp",
-			Hostname: address_out,
-			Port: port_out,
-			SocketType: "SSL",
+			Type:           "smtp",
+			Hostname:       address_out,
+			Port:           port_out,
+			SocketType:     "SSL",
 			Authentication: "password-cleartext",
-			Username: "%EMAILLOCALPART%",
+			Username:       "%EMAILLOCALPART%",
 		},
 	}
 
