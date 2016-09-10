@@ -1,5 +1,5 @@
 version: '{build}'
-clone_folder: C:\gopath\src\github.com\bolsote\autoconfig.go
+clone_folder: C:\gopath\src\github.com\bolsote\autoconfig
 init:
 - ps: >-
     Get-ChildItem Env:
