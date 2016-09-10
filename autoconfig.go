@@ -66,15 +66,15 @@ func (d *Domain) lookup(service, proto string) (string, uint16, error) {
 // querying the domain SRV records.
 func (d *Domain) GenerateXml() ([]byte, error) {
 	// Incoming server.
-	address_in, port_in, err := d.lookup("imaps", "tcp")
+	addressIn, portIn, err := d.lookup("imaps", "tcp")
 	if err != nil {
 		return nil, err
 	}
 	incoming := IncomingServer{
 		Server{
 			Type:           "imap",
-			Hostname:       address_in,
-			Port:           port_in,
+			Hostname:       addressIn,
+			Port:           portIn,
 			SocketType:     "SSL",
 			Authentication: "password-cleartext",
 			Username:       "%EMAILLOCALPART%",
@@ -82,15 +82,15 @@ func (d *Domain) GenerateXml() ([]byte, error) {
 	}
 
 	// Outgoing server.
-	address_out, port_out, err := d.lookup("submission", "tcp")
+	addressOut, portOut, err := d.lookup("submission", "tcp")
 	if err != nil {
 		return nil, err
 	}
 	outgoing := OutgoingServer{
 		Server{
 			Type:           "smtp",
-			Hostname:       address_out,
-			Port:           port_out,
+			Hostname:       addressOut,
+			Port:           portOut,
 			SocketType:     "SSL",
 			Authentication: "password-cleartext",
 			Username:       "%EMAILLOCALPART%",
